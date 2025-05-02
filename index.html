@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الانعكاس - أ. حفصة الدوسري</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: white;
+        }
+
+        #backgroundCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #1de31a;
+            margin-top: 50px;
+        }
+
+        canvas#reflectionCanvas {
+            border: 2px solid #000;
+            background-color: #fff;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        button {
+            background-color: #59f06b;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+            color: #f0f8ff;
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 16px;
+            }
+
+            canvas#reflectionCanvas {
+                width: 80%;
+                height: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="backgroundCanvas" width="1000" height="1000"></canvas>
+
+<h1>درس الانعكاس</h1>
+<canvas id="reflectionCanvas" width="500" height="500"></canvas>
+<h3>أ. حفصة الدوسري</h3>
+
+<div class="buttons">
+    <button onclick="window.location.href='index2.html'">الدرس الثاني</button>
+    <button onclick="window.location.href='q1.html'">الاختبار الأول</button>
+    <button><a href="https://www.youtube.com/watch?v=iTmrFoiUNro">شرح المفهوم</a></button>
+</div>
+
+<script>
+    // خلفية الأشكال العشوائية
+    const bgCanvas = document.getElementById('backgroundCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+
+    const colors = ['#ff6b6b', '#1e90ff', '#ffd93d', '#6bcf63', '#ff9ff3'];
+
+    function drawRandomShapes() {
+        for (let i = 0; i < 50; i++) {
+            const x = Math.random() * bgCanvas.width;
+            const y = Math.random() * bgCanvas.height;
+            const size = Math.random() * 30 + 10;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const shapeType = Math.floor(Math.random() * 3); // 0: دائرة، 1: مربع، 2: مثلث
+
+            bgCtx.fillStyle = color;
+
+            if (shapeType === 0) {
+                // دائرة
+                bgCtx.beginPath();
+                bgCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+                bgCtx.fill();
+            } else if (shapeType === 1) {
+                // مربع
+                bgCtx.fillRect(x, y, size, size);
+            } else if (shapeType === 2) {
+                // مثلث
+                bgCtx.beginPath();
+                bgCtx.moveTo(x, y);
+                bgCtx.lineTo(x + size, y);
+                bgCtx.lineTo(x + size / 2, y - size);
+                bgCtx.closePath();
+                bgCtx.fill();
+            }
+        }
+    }
+
+    drawRandomShapes();
+</script>
+
+<script>
+    // رسم شكل معين مع الانعكاس
+    const canvas = document.getElementById('reflectionCanvas');
+    const ctx = canvas.getContext('2d');
+    const origin = { x: canvas.width / 2, y: canvas.height / 2 };
+    const size = 50;
+    let isReflected = false;
+
+    function drawRhombus(reflected) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.save();
+    ctx.translate(origin.x, origin.y);
+
+    if (reflected) {
+        ctx.scale(1, -1); // انعكاس عمودي
+    }
+
+    // النصف العلوي (أزرق)
+    ctx.beginPath();
+    ctx.moveTo(0, -size);       // أعلى
+    ctx.lineTo(size, 0);        // يمين
+    ctx.lineTo(0, 0);           // المنتصف
+    ctx.lineTo(-size, 0);       // يسار
+    ctx.closePath();
+    ctx.fillStyle = '#00f';     // أزرق
+    ctx.fill();
+    ctx.stroke();
+
+    // النصف السفلي (أخضر)
+    ctx.beginPath();
+    ctx.moveTo(0, 0);           // المنتصف
+    ctx.lineTo(size, 0);        // يمين
+    ctx.lineTo(0, size);        // أسفل
+    ctx.lineTo(-size, 0);       // يسار
+    ctx.closePath();
+    ctx.fillStyle = '#00c853';  // أخضر
+    ctx.fill();
+    ctx.stroke();
+
+    ctx.restore();
+}
+
+
+    canvas.addEventListener('click', () => {
+        isReflected = !isReflected;
+        drawRhombus(isReflected);
+    });
+
+    window.onload = () => drawRhombus(isReflected);
+</script>
+
+</body>
+</html>

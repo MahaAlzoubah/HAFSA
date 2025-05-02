@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاختبار الأول - أ. حفصة الدوسري</title>
+    <style>
+        body {
+            margin: 0;
+            padding-top: 50px;
+            background-color: white;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+
+        #backgroundCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        h1 {
+            color: #de0fbf;
+        }
+
+        button {
+            background-color: #2f51cb;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .choices button {
+            margin: 10px;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            max-width: 100%;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding-top: 100px;
+            }
+            h1 {
+                font-size: 16px;
+            }
+            img {
+                width: 80%;
+                height: auto;
+                margin: 10px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="backgroundCanvas" width="1000" height="1000"></canvas>
+
+<h1>الاختبار الأول</h1>
+<img src="q1.jpeg" alt="Question Image">
+<div class="choices">
+    <button onclick="checkAnswer(1)">يزيد</button>
+    <button onclick="checkAnswer(2)">طلال</button>
+    <button onclick="checkAnswer(3)">لا أحد</button>
+</div>
+
+<h3>أ. حفصة الدوسري</h3>
+<div class="buttons">
+    <button onclick="window.location.href='index.html'">العودة إلى الدرس</button>
+</div>
+
+<audio id="clapSound" src="clap.mp3"></audio>
+
+<script>
+    function checkAnswer(answer) {
+        const clapSound = document.getElementById('clapSound');
+        if (answer === 2) {
+            clapSound.play();
+            alert('! أحسنت، إجابتك صحيحة');
+        } else {
+            alert('حاول مرة أخرى');
+        }
+    }
+</script>
+
+<script>
+    // خلفية الأشكال العشوائية
+    const bgCanvas = document.getElementById('backgroundCanvas');
+    const bgCtx = bgCanvas.getContext('2d');
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+
+    const colors = ['#ff6b6b', '#1e90ff', '#ffd93d', '#6bcf63', '#ff9ff3'];
+
+    function drawRandomShapes() {
+        for (let i = 0; i < 50; i++) {
+            const x = Math.random() * bgCanvas.width;
+            const y = Math.random() * bgCanvas.height;
+            const size = Math.random() * 30 + 10;
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const shapeType = Math.floor(Math.random() * 3); // 0: دائرة، 1: مربع، 2: مثلث
+
+            bgCtx.fillStyle = color;
+
+            if (shapeType === 0) {
+                // دائرة
+                bgCtx.beginPath();
+                bgCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+                bgCtx.fill();
+            } else if (shapeType === 1) {
+                // مربع
+                bgCtx.fillRect(x, y, size, size);
+            } else if (shapeType === 2) {
+                // مثلث
+                bgCtx.beginPath();
+                bgCtx.moveTo(x, y);
+                bgCtx.lineTo(x + size, y);
+                bgCtx.lineTo(x + size / 2, y - size);
+                bgCtx.closePath();
+                bgCtx.fill();
+            }
+        }
+    }
+
+    drawRandomShapes();
+</script>
+
+</body>
+</html>

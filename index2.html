@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>الانسحاب - أ. حفصة الدوسري</title>
+  <style>
+    body {
+      margin: 0;
+      padding-top: 50px;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #backgroundCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    h1 {
+      color: #cb2f2f;
+    }
+
+    button {
+      background-color: #cb2f2f;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    a {
+      text-decoration: none;
+      color: #f0f8ff;
+    }
+
+    #container {
+      width: 500px;
+      height: 500px;
+      border: 2px solid #000;
+      position: relative;
+      margin: 20px auto;
+    }
+
+    #circle {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      cursor: grab;
+    }
+
+    #coordinates {
+      font-size: 18px;
+      margin-top: 10px;
+      color: #333;
+    }
+
+    canvas#gridCanvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+      #container {
+        width: 100%;
+        height: 300px;
+      }
+
+      canvas {
+        width: 100%;
+        height: 300px;
+      }
+
+      #circle {
+        width: 35px;
+        height: 35px;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+
+      button {
+        padding: 10px 20px;
+        font-size: 14px;
+      }
+
+      #coordinates {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="backgroundCanvas"></canvas>
+
+<h1>درس الانسحاب</h1>
+
+<div id="container">
+  <canvas id="gridCanvas" width="500" height="500"></canvas>
+  <div id="circle"></div>
+</div>
+
+<div id="coordinates">الإحداثيات: (x: 0, y: 0)</div>
+
+<h3>أ. حفصة الدوسري</h3>
+
+<div class="buttons">
+  <button onclick="window.location.href='index.html'">الدرس السابق</button>
+  <button onclick="window.location.href='q2.html'">الاختبار الأول</button>
+  <button><a href="https://www.youtube.com/watch?v=Owkst8iXWxs&feature=youtu.be">شرح المفهوم</a></button>
+</div>
+
+<!-- 🌟 خلفية الأشكال العشوائية -->
+<script>
+  const bgCanvas = document.getElementById('backgroundCanvas');
+  const bgCtx = bgCanvas.getContext('2d');
+  const colors = ['#ff6b6b', '#1e90ff', '#ffd93d', '#6bcf63', '#ff9ff3'];
+
+  function drawShapesBackground() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * bgCanvas.width;
+      const y = Math.random() * bgCanvas.height;
+      const size = Math.random() * 30 + 10;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const shape = Math.floor(Math.random() * 3); // 0=circle, 1=square, 2=triangle
+
+      bgCtx.fillStyle = color;
+
+      if (shape === 0) {
+        // دائرة
+        bgCtx.beginPath();
+        bgCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+        bgCtx.fill();
+      } else if (shape === 1) {
+        // مربع
+        bgCtx.fillRect(x, y, size, size);
+      } else {
+        // مثلث
+        bgCtx.beginPath();
+        bgCtx.moveTo(x, y);
+        bgCtx.lineTo(x + size, y);
+        bgCtx.lineTo(x + size / 2, y - size);
+        bgCtx.closePath();
+        bgCtx.fill();
+      }
+    }
+  }
+
+  function resizeCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+    drawShapesBackground();
+  }
+
+  window.addEventListener('resize', resizeCanvas);
+  window.addEventListener('load', resizeCanvas);
+</script>
+
+<!-- شبكة الانسحاب -->
+<script>
+  const container = document.getElementById("container");
+  const circle = document.getElementById("circle");
+  const coordinates = document.getElementById("coordinates");
+  const gridCanvas = document.getElementById("gridCanvas");
+  const ctx = gridCanvas.getContext("2d");
+  let offsetX, offsetY;
+
+  function drawGrid() {
+    const step = 25;
+    const halfSteps = 10;
+    ctx.strokeStyle = "#aaa";
+    ctx.lineWidth = 1;
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#000";
+
+    for (let x = -halfSteps; x <= halfSteps; x++) {
+      const pixelX = (x + halfSteps) * step;
+      ctx.beginPath();
+      ctx.moveTo(pixelX, 0);
+      ctx.lineTo(pixelX, gridCanvas.height);
+      ctx.stroke();
+      if (x !== 0) ctx.fillText(x, pixelX, gridCanvas.height / 2 + 15);
+    }
+
+    for (let y = -halfSteps; y <= halfSteps; y++) {
+      const pixelY = (halfSteps - y) * step;
+      ctx.beginPath();
+      ctx.moveTo(0, pixelY);
+      ctx.lineTo(gridCanvas.width, pixelY);
+      ctx.stroke();
+      if (y !== 0) ctx.fillText(y, gridCanvas.width / 2 + 5, pixelY + 5);
+    }
+
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+
+    ctx.beginPath();
+    ctx.moveTo(gridCanvas.width / 2, 0);
+    ctx.lineTo(gridCanvas.width / 2, gridCanvas.height);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, gridCanvas.height / 2);
+    ctx.lineTo(gridCanvas.width, gridCanvas.height / 2);
+    ctx.stroke();
+  }
+
+  function updateCoordinates() {
+    const x = Math.round(circle.offsetLeft / 25) - 10;
+    const y = 10 - Math.round(circle.offsetTop / 25);
+    coordinates.innerText = `الإحداثيات: (x: ${x}, y: ${y})`;
+  }
+
+  circle.style.left = `${(container.clientWidth - circle.clientWidth) / 2}px`;
+  circle.style.top = `${(container.clientHeight - circle.clientHeight) / 2}px`;
+  updateCoordinates();
+
+  circle.addEventListener("mousedown", startDrag);
+  circle.addEventListener("touchstart", startDrag);
+
+  function startDrag(e) {
+    e.preventDefault();
+    const isTouch = e.type === "touchstart";
+    const event = isTouch ? e.touches[0] : e;
+
+    offsetX = event.clientX - circle.offsetLeft;
+    offsetY = event.clientY - circle.offsetTop;
+    circle.style.cursor = "grabbing";
+
+    document.addEventListener(isTouch ? "touchmove" : "mousemove", drag);
+    document.addEventListener(isTouch ? "touchend" : "mouseup", stopDrag);
+  }
+
+  function drag(e) {
+    e.preventDefault();
+    const isTouch = e.type === "touchmove";
+    const event = isTouch ? e.touches[0] : e;
+
+    const x = event.clientX - offsetX;
+    const y = event.clientY - offsetY;
+    if (x >= 0 && x <= container.clientWidth - circle.clientWidth) {
+      circle.style.left = `${x}px`;
+    }
+    if (y >= 0 && y <= container.clientHeight - circle.clientHeight) {
+      circle.style.top = `${y}px`;
+    }
+    updateCoordinates();
+  }
+
+  function stopDrag(e) {
+    const isTouch = e.type === "touchend";
+    circle.style.cursor = "grab";
+    document.removeEventListener(isTouch ? "touchmove" : "mousemove", drag);
+    document.removeEventListener(isTouch ? "touchend" : "mouseup", stopDrag);
+  }
+
+  window.onload = () => {
+    drawGrid();
+  };
+</script>
+
+</body>
+</html>
