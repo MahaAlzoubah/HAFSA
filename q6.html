@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سؤال الانسحاب - نقر على الموقع</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: white;
+    }
+
+    h1 {
+      margin-top: 40px;
+      color: #cb2f2f;
+    }
+
+    #backgroundCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    #gridContainer {
+      width: 500px;
+      height: 500px;
+      margin: 20px auto;
+      position: relative;
+    }
+
+    #dot {
+      width: 20px;
+      height: 20px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+
+    #feedback {
+      font-size: 18px;
+      margin-top: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 25px;
+      background-color: #2f51cb;
+      border: none;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="backgroundCanvas"></canvas>
+
+<h1>انقر على الموقع الصحيح بعد الانسحاب</h1>
+<p>النقطة (2، 3) انتقلت 3 وحدات لليسار و2 وحدات للأسفل</p>
+
+<div id="gridContainer">
+  <canvas id="grid" width="500" height="500"></canvas>
+  <div id="dot"></div>
+</div>
+
+<button onclick="window.location.href='index2.html'">العودة إلى الدرس</button>
+<button onclick="checkPosition()">تحقق من الموقع</button>
+<div id="feedback"></div>
+
+<audio id="clapSound" src="clap.mp3"></audio>
+
+<!-- 🎨 خلفية الأشكال -->
+<script>
+  const bgCanvas = document.getElementById("backgroundCanvas");
+  const bgCtx = bgCanvas.getContext("2d");
+  const colors = ['#ff6b6b', '#1e90ff', '#ffd93d', '#6bcf63', '#ff9ff3'];
+
+  function drawShapesBackground() {
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * bgCanvas.width;
+      const y = Math.random() * bgCanvas.height;
+      const size = Math.random() * 30 + 10;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const shape = Math.floor(Math.random() * 3);
+      bgCtx.fillStyle = color;
+
+      if (shape === 0) {
+        bgCtx.beginPath();
+        bgCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+        bgCtx.fill();
+      } else if (shape === 1) {
+        bgCtx.fillRect(x, y, size, size);
+      } else {
+        bgCtx.beginPath();
+        bgCtx.moveTo(x, y);
+        bgCtx.lineTo(x + size, y);
+        bgCtx.lineTo(x + size / 2, y - size);
+        bgCtx.closePath();
+        bgCtx.fill();
+      }
+    }
+  }
+
+  function resizeBackgroundCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+    drawShapesBackground();
+  }
+
+  window.addEventListener("load", resizeBackgroundCanvas);
+  window.addEventListener("resize", resizeBackgroundCanvas);
+</script>
+
+<!-- 🟦 شبكة المستوى الإحداثي -->
+<script>
+  const canvas = document.getElementById("grid");
+  const ctx = canvas.getContext("2d");
+  const step = 25;
+  const origin = { x: 250, y: 250 };
+
+  function drawGrid() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.strokeStyle = "#ddd";
+    ctx.font = "12px Arial";
+    ctx.fillStyle = "#000";
+
+    for (let i = 0; i <= canvas.width; i += step) {
+      ctx.beginPath();
+      ctx.moveTo(i, 0);
+      ctx.lineTo(i, canvas.height);
+      ctx.stroke();
+    }
+
+    for (let i = 0; i <= canvas.height; i += step) {
+      ctx.beginPath();
+      ctx.moveTo(0, i);
+      ctx.lineTo(canvas.width, i);
+      ctx.stroke();
+    }
+
+    // المحاور
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(origin.x, 0);
+    ctx.lineTo(origin.x, canvas.height);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(0, origin.y);
+    ctx.lineTo(canvas.width, origin.y);
+    ctx.stroke();
+
+    // الأرقام
+    ctx.fillStyle = "#000";
+    for (let x = -10; x <= 10; x++) {
+      const posX = origin.x + x * step;
+      ctx.fillText(x, posX - 5, origin.y + 15);
+    }
+
+    for (let y = -10; y <= 10; y++) {
+      const posY = origin.y - y * step;
+      if (y !== 0) ctx.fillText(y, origin.x + 5, posY + 5);
+    }
+
+    // النقطة الأصلية (2،3)
+    const x = origin.x + 2 * step;
+    const y = origin.y - 3 * step;
+    ctx.fillStyle = "blue";
+    ctx.beginPath();
+    ctx.arc(x, y, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillText("(2,3)", x + 8, y);
+  }
+
+  drawGrid();
+</script>
+
+<!-- ✅ حركة الدائرة بنقرة واحدة + تحقق -->
+<script>
+  const dot = document.getElementById("dot");
+  let lastClick = { x: 0, y: 0 };
+
+  canvas.addEventListener("click", function (e) {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    dot.style.left = `${clickX}px`;
+    dot.style.top = `${clickY}px`;
+
+    lastClick.x = clickX;
+    lastClick.y = clickY;
+  });
+
+  function checkPosition() {
+    const expectedX = origin.x + (-1) * step;
+    const expectedY = origin.y - 1 * step;
+
+    const distance = Math.hypot(lastClick.x - expectedX, lastClick.y - expectedY);
+    const feedback = document.getElementById("feedback");
+    const clap = document.getElementById("clapSound");
+
+    if (distance < 15) {
+      feedback.textContent = "🎉 رائع! وصلت النقطة إلى المكان الصحيح.";
+      feedback.style.color = "green";
+      clap.play();
+    } else {
+      feedback.textContent = "❌ النقطة ليست في المكان الصحيح. حاول مرة أخرى.";
+      feedback.style.color = "red";
+    }
+  }
+</script>
+
+</body>
+</html>

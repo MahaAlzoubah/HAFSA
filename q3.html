@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سؤال الانعكاس - أ. حفصة الدوسري</title>
+  <style>
+    body {
+      margin-top: 50px;
+      background-color: white;
+      font-family: Arial, sans-serif;
+      text-align: center;
+    }
+
+    #backgroundCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    h1 {
+      color: #de0fbf;
+      margin-top: 200px;
+    }
+
+    select {
+      padding: 5px 10px;
+      font-size: 16px;
+    }
+
+    .match-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      margin: 10px auto;
+    }
+
+    .match-row span {
+      min-width: 160px;
+      display: inline-block;
+      font-weight: bold;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    button {
+      background-color: #2f51cb;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 16px;
+      }
+      .match-row {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="backgroundCanvas"></canvas>
+
+<h1>وصل الشكل بموقع صورته المنعكسة</h1>
+
+<div class="match-row">
+  <span>نقطة في الربع الأول</span>
+  <select id="q1">
+    <option value="">اختر الإجابة</option>
+    <option value="q4">الربع الرابع</option>
+    <option value="q2">الربع الثاني</option>
+    <option value="same">نفسها</option>
+  </select>
+</div>
+
+<div class="match-row">
+  <span>نقطة في الربع الثاني</span>
+  <select id="q2">
+    <option value="">اختر الإجابة</option>
+    <option value="q4">الربع الرابع</option>
+    <option value="q3">الربع الثالث</option>
+    <option value="same">نفسها</option>
+  </select>
+</div>
+
+<div class="match-row">
+  <span>نقطة على محور X</span>
+  <select id="q3">
+    <option value="">اختر الإجابة</option>
+    <option value="changeY">تغيير الإحداثي Y فقط</option>
+    <option value="q1">الربع الأول</option>
+    <option value="noChange">تبقى كما هي</option>
+  </select>
+</div>
+
+<div class="buttons">
+    <button onclick="window.location.href='q4.html'"> السؤال الثالث </button>
+  <button onclick="checkMatching()">تحقق من الإجابات</button>
+  <button onclick="window.location.href='index.html'">العودة إلى الدرس</button>
+</div>
+
+<audio id="clapSound" src="clap.mp3"></audio>
+
+<!-- 🎨 خلفية الأشكال -->
+<script>
+  const bgCanvas = document.getElementById('backgroundCanvas');
+  const bgCtx = bgCanvas.getContext('2d');
+  const colors = ['#ff6b6b', '#1e90ff', '#ffd93d', '#6bcf63', '#ff9ff3'];
+
+  function drawShapesBackground() {
+    bgCtx.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * bgCanvas.width;
+      const y = Math.random() * bgCanvas.height;
+      const size = Math.random() * 30 + 10;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const shape = Math.floor(Math.random() * 3);
+      bgCtx.fillStyle = color;
+
+      if (shape === 0) {
+        bgCtx.beginPath();
+        bgCtx.arc(x, y, size / 2, 0, Math.PI * 2);
+        bgCtx.fill();
+      } else if (shape === 1) {
+        bgCtx.fillRect(x, y, size, size);
+      } else {
+        bgCtx.beginPath();
+        bgCtx.moveTo(x, y);
+        bgCtx.lineTo(x + size, y);
+        bgCtx.lineTo(x + size / 2, y - size);
+        bgCtx.closePath();
+        bgCtx.fill();
+      }
+    }
+  }
+
+  function resizeCanvas() {
+    bgCanvas.width = window.innerWidth;
+    bgCanvas.height = window.innerHeight;
+    drawShapesBackground();
+  }
+
+  window.addEventListener("resize", resizeCanvas);
+  window.addEventListener("load", resizeCanvas);
+</script>
+
+<!-- ✅ التحقق من الإجابة -->
+<script>
+  function checkMatching() {
+    const q1 = document.getElementById('q1').value;
+    const q2 = document.getElementById('q2').value;
+    const q3 = document.getElementById('q3').value;
+    const clapSound = document.getElementById('clapSound');
+
+    if (q1 === "q4" && q2 === "q3" && q3 === "changeY") {
+      clapSound.play();
+      alert("أحسنت! كل الإجابات صحيحة 🎉");
+    } else {
+      alert("بعض الإجابات غير صحيحة، حاول مرة أخرى.");
+    }
+  }
+</script>
+
+</body>
+</html>

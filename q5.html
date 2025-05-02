@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>الاختبار الأول - أ. حفصة الدوسري</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>سؤال الانسحاب - أ. حفصة الدوسري</title>
   <style>
     body {
       margin-top: 50px;
@@ -23,46 +23,46 @@
     }
 
     h1 {
-      color: #de0fbf;
+      color: #cb2f2f;
+      margin-top: 150px;
+    }
+
+    p {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 20px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      font-size: 16px;
+      width: 200px;
+      text-align: center;
     }
 
     button {
       background-color: #2f51cb;
       border: none;
       color: white;
-      padding: 15px 32px;
-      text-align: center;
+      padding: 12px 30px;
       margin-top: 20px;
+      font-size: 16px;
       cursor: pointer;
-    }
-
-    .choices button {
-      margin: 10px;
-    }
-
-    img {
-      display: block;
-      margin: 10px auto;
-      max-width: 60%;
     }
 
     .buttons {
       display: flex;
       justify-content: center;
       gap: 20px;
+      margin-top: 30px;
     }
 
     @media (max-width: 600px) {
-      body {
-        margin-top: 100px;
-      }
       h1 {
-        font-size: 16px;
+        font-size: 18px;
       }
-      img {
-        width: 80%;
-        height: auto;
-        margin: 10px auto;
+      p {
+        font-size: 16px;
       }
     }
   </style>
@@ -71,22 +71,26 @@
 
 <canvas id="backgroundCanvas"></canvas>
 
-<h1>الاختبار الأول</h1>
-<img src="q2.jpeg" alt="Question Image">
-<div class="choices">
-  <button onclick="checkAnswer(1)">1</button>
-  <button onclick="checkAnswer(2)">2</button>
-  <button onclick="checkAnswer(3)">3</button>
-</div>
-<h3>أ. حفصة الدوسري</h3>
+<h1>السؤال: انسحاب نقطة</h1>
+
+<p>
+  إذا انتقلت النقطة (3، 1) بمقدار وحدتين إلى اليمين و3 وحدات إلى الأعلى،<br>
+  ما إحداثيات النقطة الجديدة؟
+</p>
+
+<input type="text" id="answer" placeholder="مثال: (2, 3)">
+
+<br>
+<button onclick="checkAnswer()">تحقق من الإجابة</button>
+
 <div class="buttons">
-    <button onclick="window.location.href='q5.html'">السؤال الثاني</button>
+    <button onclick="window.location.href='q6.html'">السؤال الثالث</button>
   <button onclick="window.location.href='index2.html'">العودة إلى الدرس</button>
 </div>
 
 <audio id="clapSound" src="clap.mp3"></audio>
 
-<!-- 🎨 خلفية الأشكال العشوائية -->
+<!-- 🎨 خلفية الأشكال -->
 <script>
   const bgCanvas = document.getElementById('backgroundCanvas');
   const bgCtx = bgCanvas.getContext('2d');
@@ -99,8 +103,7 @@
       const y = Math.random() * bgCanvas.height;
       const size = Math.random() * 30 + 10;
       const color = colors[Math.floor(Math.random() * colors.length)];
-      const shape = Math.floor(Math.random() * 3); // 0 = circle, 1 = square, 2 = triangle
-
+      const shape = Math.floor(Math.random() * 3);
       bgCtx.fillStyle = color;
 
       if (shape === 0) {
@@ -130,15 +133,18 @@
   window.addEventListener("load", resizeCanvas);
 </script>
 
-<!-- ✅ منطق الإجابة -->
+<!-- ✅ التحقق من الإجابة -->
 <script>
-  function checkAnswer(answer) {
+  function checkAnswer() {
+    const userAnswer = document.getElementById('answer').value.trim();
+    const correctAnswer = "(5,4)";
     const clapSound = document.getElementById('clapSound');
-    if (answer === 1) {
+
+    if (userAnswer.replace(/\s/g, '') === correctAnswer) {
       clapSound.play();
-      alert('! أحسنت إجابتك صحيحة');
+      alert("رائع! إجابتك صحيحة 🎉");
     } else {
-      alert('حاول مرة أخرى');
+      alert("الإجابة غير صحيحة، حاول مرة أخرى 😊");
     }
   }
 </script>
